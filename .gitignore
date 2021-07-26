@@ -1,5 +1,9 @@
 # Configuration files
 config.py
+tv-token.txt
+
+# Log files
+rhasspy.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
