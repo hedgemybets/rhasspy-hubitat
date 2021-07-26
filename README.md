@@ -25,8 +25,8 @@ This also supports 2016 and later Samsung TVs that are connected via Ethernet or
 ## Installation
 
 The following are basic instructions to set up the environment, configure and install the software:
-1. Setup Rhasspy hardware with *good* microphone, computer and speakers. Instructions are at https://rhasspy.readthedocs.io/en/latest/installation/
-2. A key configuration for Rhasspy is that its MQTT event broker's IP port has to be available on your networ so the Python code can listen for intent events. If you are using docker (highly recommended), I have included two docker commands in this repo that set this up. The only difference between the two is that one is for interactive use where the docker messages come to the console. The other starts docker as a background process. The latter will likely be how to set up Rhasspy to run whenever your computer boots or restarts.
+1. Setup Rhasspy hardware with a **good** microphone, computer and speakers. Instructions are at https://rhasspy.readthedocs.io/en/latest/installation/
+2. A key configuration for Rhasspy is that its MQTT event broker's IP port has to be available on your network so the Python code can listen for intent events. If you are using docker (**highly recommended**), I have included two docker commands in this repo that set this up (at least for Linux). The only difference between the two is that start-rhasspy.sh is for interactive use where the docker messages come to the console. The other, start-rhasspy-d.sh starts docker as a background process. The latter will likely be how to set up Rhasspy to run whenever your computer boots or restarts.
 3. Using the Rhasspy web interface, edit sentences.ini with the items you want to control in Hubitat. An example configuration is in this repository. Be sure to use the exact device names defined in Hubitat.
 4. Test your Rhasspy system using the web interface to be sure that the intents are being recognized and variables are being passed as required.
 5. Install the Maker API app on your Hubitat hub and configure the devices you want to make available for Rhasspy to control or check status on.
@@ -41,6 +41,7 @@ Next are the steps to download and configure the Python components:
 1. If you have git installed, you can clone the software to a local directory on the Rhasspy computer.
 2. Create a file called config.py and enter the IP Address and Hub token for Maker API in the format shown in the comments of porcupine.py.
 3. You should then be able to launch the Python code with the following:
+    
     python3 ./porcupine.py --host localhost --port 12183
     
 This assumes that porcupine is running on the same computer and the MQTT event broker port is set to the default 12183.
