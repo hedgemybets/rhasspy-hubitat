@@ -4,14 +4,14 @@
 
     The intents to be handled by this application are triggered by voice queries to Rhasspy such as:
 
-    * Turn on|off the TV (turns on a virtual switch used by a Hubitat rule to control the TV, AV receiver, and Tivo)
-    * Set the <fan name> to low|medium low|medium|medium high|high
-    * Turn on|off the <light_name>
-    * Set the <light_name> to <number> percent
-    * Open|close the shades|blinds
-    * Turn on|off music
-    * Play some <music genre or playlist>
-    * Turn on <channel_name>
+* Turn on|off the TV (turns on a virtual switch used by a Hubitat rule to control the TV, AV receiver, and Tivo)
+* Set the <fan name> to low|medium low|medium|medium high|high
+* Turn on|off the <light_name>
+* Set the <light_name> to <number> percent
+* Open|close the shades|blinds
+* Turn on|off music
+* Play some <music genre or playlist>
+* Turn on <channel_name>
     
     The last three are not yet implemented.
 
