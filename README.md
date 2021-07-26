@@ -42,7 +42,7 @@ Next are the steps to download and configure the Python components:
 2. Create a file called config.py and enter the IP Address and Hub token for Maker API in the format shown in the comments of porcupine.py.
 3. You should then be able to launch the Python code with the following:
     
-    python3 ./porcupine.py --host localhost --port 12183
+    `python3 ./porcupine.py --host localhost --port 12183`
     
 This assumes that porcupine is running on the same computer and the MQTT event broker port is set to the default 12183.
 Note that you may have to open up the firewall for Rhasspy to expose this port to the Python code.
