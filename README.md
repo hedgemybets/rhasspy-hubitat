@@ -24,4 +24,13 @@ This also supports 2016 and later Samsung TVs that are connected via Ethernet or
 
 ## Installation
 
+The following are basic instructions to set up the environment, configure and install the software:
+1. Setup Rhasspy hardware with *good* microphone, computer, and speakers. Instructions are at https://rhasspy.readthedocs.io/en/latest/installation/
+2. Using the Rhasspy web interface, edit sentences.ini with the items you want to control in Hubitat. An example configuration is in this repository. Be sure to use the exact device names defined in Hubitat.
+3. Test your Rhasspy system using the web interface to be sure that the intents are being recognized and variables are being passed as required.
+4. Set up your Python environment to run the integration code. I use pipenv, but you can use venv or just pip to install the necessary modules. There are only two modules to install as the rest are automatically installed as dependencies. The modules are:
+    * pyhubitat
+    * rhasspy-hermes-app
+Optionally, you can install samsungtvws if you have a Samsung TV and want to control it directly.
 
+    
