@@ -12,8 +12,8 @@ This application handles intents triggered by voice queries to Rhasspy such as:
 * Set the <light_name> to <number> percent
 * Open|close the shades|blinds
 * Turn on|off music
-* Play some <music genre or playlist>
-* Turn on <channel_name>
+* Play some music genre or playlist
+* Turn on channel_name
     
 The last three are not yet implemented, but examples of what can be done.
 
