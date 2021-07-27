@@ -46,11 +46,11 @@ Next are the steps to download and configure the Python components:
 2. Create a file called config.py and enter the IP Address and Hub token for Maker API in the format shown in the comments of porcupine.py.
 3. You will likely need to open up the firewall for Rhasspy to make the MQTT event service port available to the Python code. For Ubuntu or Raspbian Linux the command is:
     
-    `sudo ufw allow 12183/tcp`
+> sudo ufw allow 12183/tcp
     
 4. You should then be able to launch the Python code with the following:
     
-    `python3 ./porcupine.py --host localhost --port 12183`
+> python3 ./porcupine.py --host localhost --port 12183
     
   This assumes that porcupine is running on the same computer and the MQTT event service port is set to the default 12183.
 5. Note that this is example code and you will need to modify the porcupine.py code to meet your specific requirements. Some of the intent-handling apps should word as-is, assuming you modify the sentences.ini file to match the device names you have, but some are specific to my environment. The pattern for each intent-handling app is pretty straightforward and just a few lines of code and there is documentation for the rhasspy-hermes-app module at https://rhasspy-hermes-app.readthedocs.io/en/latest/. This will give you additional examples for more complex voice applications.
