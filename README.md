@@ -53,6 +53,7 @@ Next are the steps to download and configure the Python components:
        python3 ./porcupine.py --host localhost --port 12183
     
   This assumes that porcupine is running on the same computer and the MQTT event service port is set to the default 12183.
+
 5. Note that this is example code and you will need to modify the porcupine.py code to meet your specific requirements. Some of the intent-handling apps should word as-is, assuming you modify the sentences.ini file to match the device names you have, but some are specific to my environment. The pattern for each intent-handling app is pretty straightforward and just a few lines of code and there is documentation for the rhasspy-hermes-app module at https://rhasspy-hermes-app.readthedocs.io/en/latest/. This will give you additional examples for more complex voice applications.
 
     
