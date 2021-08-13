@@ -86,12 +86,12 @@ def send_command(name, state):
             verb = VERB['plural']
         else:
             verb = VERB['singular']
-        message = CONFIRMATION[random.randint(0,5)] + ", " + name + " " + verb + " now " + state
-        print(message)
+        dialogue = CONFIRMATION[random.randint(0,5)] + ", " + name + " " + verb + " now " + state
+        logging.info('Dialogue message is: ' + dialogue)
     else:
         logging.error("Can't change state, error finding device ID")
-        message = "Sorry, I can't find the device named " + name
-    return message
+        dialogue = "Sorry, I can't find the device named " + name
+    return dialogue
 
 
 # INITIALIZATION
@@ -163,20 +163,20 @@ async def get_garage_status(intent: NluIntent):
         elif count == 1:
             verb = 'is'
             garage = 'door '
-    message = 'There ' + verb + ' ' + str(count) + ' garage ' + garage + state
-    print(message)
+    dialogue = 'There ' + verb + ' ' + str(count) + ' garage ' + garage + state
+    logging.info('Dialogue message is: ' + dialogue)
     logging.info("Garage state is %s and count is %d",state,count)
-    return EndSession(message)
+    return EndSession(dialogue)
 
 @app.on_intent("ChangeTVState")
 async def tv_power(intent: NluIntent):
     """Turn the TV on or off."""
     intent_info = json.loads(intent.payload())
     state = intent_info["slots"][0]["value"]["value"]
-    name = "TV power"
+    name = "tv power"
     # Now change the TV virtual switch in Hubitat
-    message = send_command(name,state)
-    return EndSession(message)
+    dialogue = send_command(name,state)
+    return EndSession(dialogue)
 
 @app.on_intent("ChangeLightState")
 async def set_lights(intent: NluIntent):
@@ -190,8 +190,8 @@ async def set_lights(intent: NluIntent):
         else:
             state = slot["rawValue"]
     # Now set the light state for the Hubitat device
-    message = send_command(name,state)
-    return EndSession(message)
+    dialogue = send_command(name,state)
+    return EndSession(dialogue)
 
 @app.on_intent("ChangeFanSpeed")
 async def set_fanspeed(intent: NluIntent):
@@ -236,8 +236,8 @@ async def set_shade(intent: NluIntent):
         else:
             state = 'on'
     # Now set the shade state for the Hubitat device
-    message = send_command(name,state)
-    return EndSession(message)
+    dialogue = send_command(name,state)
+    return EndSession(dialogue)
 
 app.run()
 
