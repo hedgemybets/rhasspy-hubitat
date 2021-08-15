@@ -19,10 +19,11 @@ Rhasspy Intent Event Handler for Hubitat
 
     For initialization, this application makes a call to the Maker API to obtain all device details for later use. This means that the device names used in the Rhasspy sentences.ini config must match although they can be lower case in sentences.ini.
 
-    This also supports 2016 and later Samsung TVs that are connected via Ethernet or WiFi. This allows selecting Samsung applications like Prime Video or Plex server, by lookup of the list of installed apps to find the numeric codes required to select an app (future enhancement).
+    Future Enhancement: This also supports 2016 and later Samsung TVs that are connected via Ethernet or WiFi. This allows selecting Samsung applications like Prime Video or Plex server, by lookup of the list of installed apps to find the numeric codes required to select an app.
 
 Release notes:
 
+    0.3     8-15-21     Clean up dialogue responses and add support for shade group "west side shades"
     0.2     7-26-21     Logging added
 
     0.1     7-14-21     Supports the following "skills":
@@ -86,6 +87,15 @@ def send_command(name, state):
             verb = VERB['plural']
         else:
             verb = VERB['singular']
+        # Now we check if shades are being controlled, if so, change dialogue state to be accurate. (This is something Siri can't do!)
+        if 'shade' in name and state == 'on':
+            state = 'opening'
+        elif 'shade' in name and state == 'off':
+            state = 'closing'
+        elif 'shade' in name and state == 'open':
+            state = 'opening'
+        elif 'shade' in name and state == 'close':
+            state = 'closing'
         dialogue = CONFIRMATION[random.randint(0,5)] + ", " + name + " " + verb + " now " + state
         logging.info('Dialogue message is: ' + dialogue)
     else:
@@ -229,8 +239,8 @@ async def set_shade(intent: NluIntent):
             name = slot["rawValue"]
         else:
             state = slot["rawValue"]
-    # "All Shades" is set up as a group dimmer in Hubitat, so we swap commands 'open' and 'close' for 'on' and 'off' respectively
-    if name == 'all shades':
+    # "All Shades" and "West Side Shades" are set up as a group dimmer in Hubitat since there isn't group shade support. So we swap commands 'open' and 'close' for 'on' and 'off' respectively
+    if name == 'all shades' or name == 'west side shades':
         if state == 'close':
             state = 'off'
         else:
