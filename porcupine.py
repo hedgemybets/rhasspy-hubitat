@@ -196,9 +196,9 @@ async def set_lights(intent: NluIntent):
     slots = intent_info["slots"]
     for slot in slots:
         if slot["entity"] == 'name':
-            name = slot["rawValue"]
+            name = slot["value"]["value"]
         else:
-            state = slot["rawValue"]
+            state = slot["value"]["value"]
     # Now set the light state for the Hubitat device
     dialogue = send_command(name,state)
     return EndSession(dialogue)
@@ -211,9 +211,9 @@ async def set_fanspeed(intent: NluIntent):
     slots = intent_info["slots"]
     for slot in slots:
         if slot["entity"] == 'name':
-            fan_name = slot["rawValue"]
+            fan_name = slot["value"]["value"]
         else:
-            fan_speed = slot["rawValue"]
+            fan_speed = slot["value"]["value"]
     logging.info("Setting %s speed to %s", fan_name,fan_speed)
 
     # Now set the fan speed for the Hubitat fan device
@@ -236,9 +236,9 @@ async def set_shade(intent: NluIntent):
     slots = intent_info["slots"]
     for slot in slots:
         if slot["entity"] == 'name':
-            name = slot["rawValue"]
+            name = slot["value"]["value"]
         else:
-            state = slot["rawValue"]
+            state = slot["value"]["value"]
     # "All Shades" and "West Side Shades" are set up as a group dimmer in Hubitat since there isn't group shade support. So we swap commands 'open' and 'close' for 'on' and 'off' respectively
     if name == 'all shades' or name == 'west side shades':
         if state == 'close':
