@@ -12,7 +12,7 @@ Rhasspy Intent Event Handler for Hubitat
     -Open|close the shades|blinds
     -Turn on|off music
     -Play some <music genre or playlist>
-    -Turn on <channel_name>
+    -Change the channel to <tv_channel>
 
     The intents and entities used must first be defined in the sentences.ini configuration in Rhasspy.
     The devices you want to control need to be selected in Maker API app in Hubitat.
@@ -23,15 +23,17 @@ Rhasspy Intent Event Handler for Hubitat
 
 Release notes:
 
+    0.4     9-24-21     Supports "Change the channel to <tv_channel>
     0.3     8-15-21     Clean up dialogue responses and add support for shade group "west side shades"
     0.2     7-26-21     Logging added
 
     0.1     7-14-21     Supports the following "skills":
-                            -Tell time
+                            -What time is it?
+                            -What's the weather? (from Dark Sky API)
                             -Turn on/off TV power
                             -Turn on/off lights
                             -Set fan speed
-                            -Open/close shade or all shades
+                            -Open/close shade or shade groups
                         To do:
                             -Select TV apps on Samsung TV (Prime Video, Plex)
                             -Select TV channels using Tivo (ABC, CBS, NBC, PBS, etc.)
@@ -49,6 +51,7 @@ import time
 from datetime import datetime
 import json
 import random
+import requests
 
 from rhasspyhermes.nlu import NluIntent
 from rhasspyhermes_app import EndSession, HermesApp
@@ -67,6 +70,8 @@ import config
 # The following are defined in config.py which is in .gitignore to hide these from the Github repo:
 # HUBITAT_IP = 'ip_address' # Enter the IP address or hub's DNS entry
 # HUB_TOKEN = 'hub_token' # Use the token shown in the Maker API app on your Hubitat hub
+# DARK_SKY_KEY = 'key' # Use the token for Dark Sky API
+# LAT_LONG = 'lat,long' # Location for the weather query (use '-' in front of number if lat is S, and '-' if long is W)
 # TV_IP = 'ip_address' # Samsung TV IP address, if used
 
 # The following confirmations are randomly selected to provide a variety of responses
@@ -149,6 +154,16 @@ async def get_time(intent: NluIntent):
     now = datetime.now().strftime("%H %M")
     logging.info("Telling the time")
     return EndSession(f"The current time is {now}")
+    
+@app.on_intent("GetWeather")
+async def get_weather(intent: NluIntent):
+    """Provide temperature and forecast precip."""
+    r = requests.get('https://api.darksky.net/forecast/' + config.DARK_SKY_KEY + '/' + config.LAT_LONG,timeout = 30)
+    forecast = json.loads(r.text)
+    temp = round(forecast['currently']['temperature'])
+    summary = forecast['hourly']['summary']
+    logging.info("Providing Weather")
+    return EndSession(f"The current temperature is {temp} and the forecast is {summary}")
 
 @app.on_intent("GetGarageState")
 async def get_garage_status(intent: NluIntent):
@@ -157,7 +172,7 @@ async def get_garage_status(intent: NluIntent):
     door2=ph.device_status(43)
     door3=ph.device_status(44)
     doors =[door1,door2,door3]
-    pprint.pprint(doors)
+    # pprint.pprint(doors)
     state = 'closed'
     count = 0
     verb = 'are'
@@ -187,6 +202,24 @@ async def tv_power(intent: NluIntent):
     # Now change the TV virtual switch in Hubitat
     dialogue = send_command(name,state)
     return EndSession(dialogue)
+    
+@app.on_intent("ChangeTVChannel")
+async def tv_channel(intent: NluIntent):
+    """Change the TV channel."""
+    intent_info = json.loads(intent.payload())
+    slots = intent_info["slots"]
+    for slot in slots:
+        if slot["entity"] == 'name':
+            name = slot["value"]["value"]
+        else:
+            tv_channel = slot["value"]["value"]
+    logging.info("Setting channel to %s", tv_channel)
+    # Look up the channel from config.py in config.lkup dictionary
+    # update the values like this example: lkup = {'ABC':'708','CBS':'706','NBC':'712','PBS':'704'}
+    channel = config.lkup[tv_channel]
+    # Now change the TV channel in Hubitat
+    ph.send_command(194, 'setCH', channel)
+    return EndSession(f"The TV channel is now {channel}")
 
 @app.on_intent("ChangeLightState")
 async def set_lights(intent: NluIntent):
