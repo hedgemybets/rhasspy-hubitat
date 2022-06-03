@@ -36,9 +36,11 @@ The following are basic instructions to set up the environment, configure and in
     * pyhubitat
     * rhasspy-hermes-app
 
-Optionally, you can install samsungtvws if you have a Samsung TV and want to read its application codes for switching apps on the TV. There is a requirements.txt file in the repository if you just want to install everything with one command:
+Optionally, you can install samsungtvws if you have a Samsung TV and want to read its application codes for switching apps on the TV. If you just want to install everything with pip:
     
-    pip install
+    pip install pyhubitat rhasspy-hermes-app
+	
+IMPORTANT: The library httpx should be at least version 0.23 as earlier versions have a security vulnerability. Also, the requirements.txt has frozen versions that I originally installed on my PC for development, this file is for reference only.
 
 Next are the steps to download and configure the Python components:
     
