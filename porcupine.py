@@ -23,6 +23,8 @@ Rhasspy Intent Event Handler for Hubitat
 
 Release notes:
 
+    0.6     9-21-22     Changed get_weather to get temperature from my Ambient weather station, moving away from Dark Sky as their API is going away.
+    0.5     6-10-22     When turning on the TV, also sets a default channel.
     0.4     9-24-21     Supports "Change the channel to <tv_channel>
     0.3     8-15-21     Clean up dialogue responses and add support for shade group "west side shades"
     0.2     7-26-21     Logging added
@@ -57,6 +59,7 @@ from rhasspyhermes.nlu import NluIntent
 from rhasspyhermes_app import EndSession, HermesApp
 
 from pyhubitat import MakerAPI
+from ambient_api.ambientapi import AmbientAPI
 
 # Below are only needed if you have a Samsung TV
 import samsungtvws
@@ -73,6 +76,8 @@ import config
 # DARK_SKY_KEY = 'key' # Use the token for Dark Sky API
 # LAT_LONG = 'lat,long' # Location for the weather query (use '-' in front of number if lat is S, and '-' if long is W)
 # TV_IP = 'ip_address' # Samsung TV IP address, if used
+# AMBIENT_API_KEY='my_api_key' # Use the api token from your Ambient Account
+# AMBIENT_APPLICATION_KEY='my_app_key' # Use an app token from your Ambient Account
 
 # The following confirmations are randomly selected to provide a variety of responses
 CONFIRMATION = ['All set','OK','Done','Confirmed','Absolutely','Sure']
@@ -146,6 +151,10 @@ logging.info("Starting to monitor intents")
 
 # _LOGGER = logging.getLogger("IntentMonitorApp")
 
+# Initialize the API, and since we are not setting up environment variables, we pass them in as commands.
+api = AmbientAPI(AMBIENT_ENDPOINT='https://api.ambientweather.net/v1', AMBIENT_API_KEY=config.AMBIENT_API_KEY, AMBIENT_APPLICATION_KEY=config.AMBIENT_APPLICATION_KEY)
+
+
 app = HermesApp("IntentMonitorApp")
 
 @app.on_intent("GetTime")
@@ -162,8 +171,19 @@ async def get_weather(intent: NluIntent):
     forecast = json.loads(r.text)
     temp = round(forecast['currently']['temperature'])
     summary = forecast['hourly']['summary']
+    
+    devices = api.get_devices()
+    device = devices[0]
+    time.sleep(1) #pause for a second to avoid Ambient API limits
+    weather = device.get_data()
+    for key, value in weather[0].items():
+        # print ('{0:20} {1}'.format(key,str(value)))
+        # Find tempf
+        if key == 'tempf':
+            tempf = str(value)
+            
     logging.info("Providing Weather")
-    return EndSession(f"The current temperature is {temp} and the forecast is {summary}")
+    return EndSession(f"The current temperature is {tempf} and the forecast is {summary}")
 
 @app.on_intent("GetGarageState")
 async def get_garage_status(intent: NluIntent):
@@ -201,6 +221,9 @@ async def tv_power(intent: NluIntent):
     name = "tv power"
     # Now change the TV virtual switch in Hubitat
     dialogue = send_command(name,state)
+    if state == 'on':
+        time.sleep(3)
+        ph.send_command(194, 'setCH', '706')
     return EndSession(dialogue)
     
 @app.on_intent("ChangeTVChannel")
@@ -273,7 +296,7 @@ async def set_shade(intent: NluIntent):
         else:
             state = slot["value"]["value"]
     # "All Shades" and "West Side Shades" are set up as a group dimmer in Hubitat since there isn't group shade support. So we swap commands 'open' and 'close' for 'on' and 'off' respectively
-    if name == 'all shades' or name == 'west side shades':
+    if name == 'all shades' or name == 'west side shades' or name == 'morning shades':
         if state == 'close':
             state = 'off'
         else:
